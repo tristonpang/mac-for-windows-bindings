@@ -196,6 +196,16 @@
 ; De-indent
 ![:: Send '{LCtrl down}[{LCtrl up}'
 
+; Add cursor
+<#LButton:: Send '{LAlt down}{Click}{LAlt up}'
+
+; Switch between split windows
+<!1:: Send '{LCtrl down}1{LCtrl up}'
+<!2:: Send '{LCtrl down}2{LCtrl up}'
+<!3:: Send '{LCtrl down}3{LCtrl up}'
+<!4:: Send '{LCtrl down}4{LCtrl up}'
+<!5:: Send '{LCtrl down}5{LCtrl up}'
+
 ; --------------------------------------------------------------
 ; 60% Keyboard Bindings
 ; --------------------------------------------------------------
