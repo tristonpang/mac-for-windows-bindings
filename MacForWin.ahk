@@ -25,7 +25,7 @@
 ; Base System Remappings
 ; --------------------------------------------------------------
 
-; LAlt::							LCtrl
+*~LAlt::Send "{Blind}{vkE8}"
 ; ~LWin::
 ; ~RWin::Send("{Blind}{vkFF}")
 
