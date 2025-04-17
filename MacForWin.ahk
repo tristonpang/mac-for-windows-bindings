@@ -213,6 +213,9 @@
 ; Tilde
 >^Esc:: Send '~'
 
+; Back tick
+<^Esc:: Send '``'
+
 ; Fn keybinds (RCtrl)
 >^1:: Send '{F1}'
 >^2:: Send '{F2}'
