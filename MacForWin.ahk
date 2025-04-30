@@ -249,6 +249,7 @@
 
 ; Browser Devtools
 #!I:: Send '{F12}'
+!+c:: Send '{Ctrl down}{Shift down}c{Shift up}{Ctrl up}'
 
 ; Tab switching
 #!Left:: Send '{Ctrl down}{PgUp}{Ctrl up}'
