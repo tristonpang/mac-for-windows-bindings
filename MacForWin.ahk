@@ -265,11 +265,65 @@
 ; REG ADD HKCU\Software\Classes\ms-officeapp\Shell\Open\Command /t REG_SZ /d rundll32
 
 
-; Shift window to left monitor
-^#!Left:: Send '{LWin down}{LShift down}{Left down}{LWin up}{LShift up}{Left up}'
+; Shift window to left / right monitor
+; Uses WinMove instead of sending Win+Shift+Arrow: adding Shift to the held
+; Ctrl+Win+Alt forms the Office key chord (Ctrl+Shift+Alt+Win), which opens
+; the Microsoft 365 Copilot app.
+^#!Left:: MoveToAdjacentMonitor(-1)
+^#!Right:: MoveToAdjacentMonitor(1)
 
-; Shift window to right monitor
-^#!Right:: Send '{LWin down}{LShift down}{Right down}{LWin up}{LShift up}{Right up}'
+MoveToAdjacentMonitor(dir) {
+	hwnd := WinExist("A")
+	if !hwnd || MonitorGetCount() < 2
+		return
+
+	wasMax := WinGetMinMax(hwnd) = 1
+	if wasMax
+		WinRestore(hwnd)
+
+	WinGetPos(&x, &y, &w, &h, hwnd)
+	cur := MonitorFromPoint(x + w // 2, y + h // 2)
+
+	; Sort monitors left-to-right so Left/Right match the physical layout
+	mons := []
+	Loop MonitorGetCount() {
+		MonitorGetWorkArea(A_Index, &l, &t, &r, &b)
+		mons.Push({idx: A_Index, l: l, t: t, r: r, b: b})
+	}
+	Loop mons.Length - 1 {
+		Loop mons.Length - A_Index {
+			if mons[A_Index].l > mons[A_Index + 1].l {
+				tmp := mons[A_Index]
+				mons[A_Index] := mons[A_Index + 1]
+				mons[A_Index + 1] := tmp
+			}
+		}
+	}
+
+	pos := 1
+	for i, m in mons
+		if m.idx = cur
+			pos := i
+	nextPos := Mod(pos - 1 + dir + mons.Length, mons.Length) + 1
+	c := mons[pos], n := mons[nextPos]
+
+	; Keep the same relative position and size on the new monitor
+	sx := (n.r - n.l) / (c.r - c.l)
+	sy := (n.b - n.t) / (c.b - c.t)
+	WinMove(n.l + (x - c.l) * sx, n.t + (y - c.t) * sy, w * sx, h * sy, hwnd)
+
+	if wasMax
+		WinMaximize(hwnd)
+}
+
+MonitorFromPoint(px, py) {
+	Loop MonitorGetCount() {
+		MonitorGet(A_Index, &l, &t, &r, &b)
+		if (px >= l && px < r && py >= t && py < b)
+			return A_Index
+	}
+	return MonitorGetPrimary()
+}
 
 ; Maximise window
-^#Enter:: Send '{LWin down}{LShift down}{Up}{LWin up}{LShift up}'
+^#Enter:: WinMaximize("A")
